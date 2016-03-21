@@ -8,18 +8,83 @@
 
 import UIKit
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
 
+    @IBOutlet weak var searchBar: UISearchBar!
+    
+    @IBOutlet weak var tableView: UITableView!
+    
+    let citiesArray = ["Salt Lake City", "St. George", "Cedar City", "Lehi", "West Valley", "Magna", "Kearns", "Logan", "Layton"]
+    
+    var resultsArray = [String]()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+
+        resultsArray = citiesArray
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+        
+        let cell = tableView.dequeueReusableCellWithIdentifier("Cell")!
+        
+        cell.textLabel?.text = resultsArray[indexPath.row]
+        
+        return cell
     }
 
+    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
+        return self.resultsArray.count
+        
+    }
+    
+    func searchBarCancelButtonClicked(searchBar: UISearchBar) {
 
+        restoreSearchBar("")
+        print("cancel")
+        
+    }
+    
+    func searchBarTextDidEndEditing(searchBar: UISearchBar) {
+        print("search did end")
+        
+    }
+    func restoreSearchBar(searchText: String) {
+        if searchText == "" {
+            self.searchBar.text = ""
+            self.resultsArray = self.citiesArray
+            self.tableView.reloadData()
+            self.searchBar.resignFirstResponder()
+        }
+        
+    }
+    
+    func searchBar(searchBar: UISearchBar, textDidChange searchText: String) {
+        
+        self.resultsArray.removeAll()
+    
+        for city in self.citiesArray {
+            
+            if city.lowercaseString.hasPrefix(searchText.lowercaseString) {
+                
+                self.resultsArray.append(city)
+                
+                print(resultsArray)
+            }
+            tableView.reloadData()  
+        }
+        restoreSearchBar(searchText)
+    }
+
+    
+    func containsString(str: String, searchText: String) -> Bool {
+        
+        let lowercaseString = str.lowercaseString
+        
+        let lowercaseSearchText = searchText.lowercaseString
+        
+        return lowercaseString.hasPrefix(lowercaseSearchText)
+    }
 }
 
